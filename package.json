@@ -1,0 +1,12 @@
+{
+  "name": "blackfang-labs-website",
+  "version": "1.0.0",
+  "description": "Blackfang Labs — official brand website",
+  "private": true,
+  "scripts": {
+    "start": "npx serve public -l 8082",
+    "dev": "npx serve public -l 8082 --cors"
+  },
+  "keywords": ["blackfang", "osint", "pentest", "security"],
+  "license": "MIT"
+}
