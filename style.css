@@ -1,0 +1,24 @@
+/* Blackfang Labs — Core Stylesheet
+   Theme: Black + Neon Cyan terminal aesthetic
+   Colors: #000000 / #0a0f1a / #00e5ff / #00c97a
+   This file mirrors the inline styles in public/index.html for use
+   with a future build system (Vite, Parcel, etc.) */
+
+:root {
+  --black:   #000000;
+  --void:    #020509;
+  --dark:    #060d14;
+  --panel:   #090f1a;
+  --border:  #0f1f2e;
+  --border2: #162840;
+  --cyan:    #00e5ff;
+  --cyan2:   #00bcd4;
+  --cyan3:   #0097a7;
+  --green:   #00ff9d;
+  --green2:  #00c97a;
+  --dim:     #4a6a7a;
+  --muted:   #2a3f4f;
+  --text:    #b0c8d4;
+  --text2:   #7a9aaa;
+  --bright:  #e0f4f8;
+}
