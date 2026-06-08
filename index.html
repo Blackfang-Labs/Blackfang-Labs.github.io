@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#000000"/>
+  <meta name="description" content="Blackfang Labs — offensive security tooling. Bloodhound Recon and Nightbreak Pentest Suite."/>
+  <title>Blackfang Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #000000;
+      --void:    #020509;
+      --dark:    #060d14;
+      --panel:   #090f1a;
+      --border:  #0f1f2e;
+      --border2: #162840;
+      --cyan:    #00e5ff;
+      --cyan2:   #00bcd4;
+      --cyan3:   #0097a7;
+      --green:   #00ff9d;
+      --green2:  #00c97a;
+      --dim:     #4a6a7a;
+      --muted:   #2a3f4f;
+      --text:    #b0c8d4;
+      --text2:   #7a9aaa;
+      --bright:  #e0f4f8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--void); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan3); }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 15% 20%, rgba(0,150,200,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 80%, rgba(0,100,150,0.05) 0%, transparent 50%);
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.9);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo-mark {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel);
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-logo-mark::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan3), transparent);
+    }
+    .nav-logo-mark svg { opacity: 0.8; }
+
+    .nav-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--bright);
+      letter-spacing: 0.04em;
+    }
+    .nav-brand span { color: var(--cyan); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+
+    .nav-cta {
+      background: transparent;
+      border: 1px solid var(--cyan3);
+      color: var(--cyan) !important;
+      padding: 7px 16px;
+      border-radius: 3px;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.12em;
+      transition: all 0.2s !important;
+    }
+    .nav-cta:hover {
+      background: rgba(0,229,255,0.08) !important;
+      border-color: var(--cyan) !important;
+      box-shadow: 0 0 12px rgba(0,229,255,0.2);
+    }
+
+    /* Main wrapper */
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Section spacing */
+    section {
+      padding: 96px 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Section labels */
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--cyan3);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1px;
+      background: var(--cyan3);
+    }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 80px;
+    }
+
+    .hero-inner {
+      max-width: 900px;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      margin-bottom: 0;
+    }
+    .terminal-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .terminal-dot.red    { background: #3d1818; }
+    .terminal-dot.yellow { background: #3d3018; }
+    .terminal-dot.green  { background: #183d22; }
+    .terminal-title {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-left: 4px;
+    }
+
+    .terminal-body {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 0 0 4px 4px;
+      padding: 28px 24px;
+      margin-bottom: 40px;
+    }
+
+    .terminal-prompt {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .prompt-host {
+      color: var(--cyan2);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .prompt-char {
+      color: var(--green);
+      font-size: 13px;
+    }
+    .prompt-cmd {
+      color: var(--bright);
+      font-size: 13px;
+    }
+
+    .terminal-output {
+      margin-top: 16px;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 800;
+      color: var(--bright);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .hero-title .accent { color: var(--cyan); }
+    .hero-title .accent2 { color: var(--green); }
+
+    .hero-sub {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text2);
+      margin-bottom: 32px;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      border-radius: 3px;
+      color: var(--cyan);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: rgba(0,229,255,0.08);
+      box-shadow: 0 0 20px rgba(0,229,255,0.2);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      background: var(--panel);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--dim);
+      color: var(--bright);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      border-left: 2px solid var(--border2);
+      padding-left: 14px;
+    }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--cyan);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* Cursor blink */
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--cyan);
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* Typing animation */
+    .typewriter {
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+      animation: typing 2.5s steps(30, end) forwards;
+    }
+    @keyframes typing { to { width: 100%; } }
+
+    /* TOOLS section */
+    #tools { background: linear-gradient(180deg, var(--black) 0%, var(--void) 50%, var(--black) 100%); }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .tool-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .tool-card.bloodhound::before { background: linear-gradient(90deg, transparent, #9b1a1a, transparent); }
+    .tool-card.nightbreak::before { background: linear-gradient(90deg, transparent, var(--cyan3), transparent); }
+    .tool-card:hover {
+      border-color: var(--border2);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+
+    .tool-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .tool-badge.recon   { background: rgba(155,26,26,0.12); border: 1px solid rgba(155,26,26,0.3); color: #c87070; }
+    .tool-badge.pentest { background: rgba(0,150,167,0.1);  border: 1px solid rgba(0,150,167,0.3); color: var(--cyan2); }
+
+    .tool-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--bright);
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .tool-name .bloodhound-accent { color: #c41c1c; }
+    .tool-name .nightbreak-accent { color: var(--cyan); }
+
+    .tool-tagline {
+      font-size: 12px;
+      color: var(--dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .tool-desc {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .tool-modules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .module-tag {
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 2px;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .tool-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tool-stack {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .tool-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+    .tool-link.bloodhound-link {
+      color: #c87070;
+      border: 1px solid #5a1a1a;
+    }
+    .tool-link.bloodhound-link:hover {
+      background: rgba(155,26,26,0.1);
+      border-color: #9b1a1a;
+    }
+    .tool-link.nightbreak-link {
+      color: var(--cyan2);
+      border: 1px solid var(--border2);
+    }
+    .tool-link.nightbreak-link:hover {
+      background: rgba(0,150,167,0.08);
+      border-color: var(--cyan3);
+    }
+
+    /* ABOUT section */
+    #about { border-top: 1px solid var(--border); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      margin-top: 48px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .tools-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+
+    .about-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--bright);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .about-title .accent { color: var(--green); }
+
+    .about-body {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      color: var(--text2);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+
+    .principles {
+      margin-top: 32px;
+    }
+    .principle {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .principle:last-child { border-bottom: none; }
+    .principle-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: var(--dark);
+      margin-top: 2px;
+    }
+    .principle-text h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--bright);
+      margin-bottom: 3px;
+    }
+    .principle-text p {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.6;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .about-terminal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      font-size: 12px;
+    }
+
+    .about-terminal-header {
+      background: var(--dark);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .at-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .at-dot.r { background: #3d1515; }
+    .at-dot.y { background: #3d3015; }
+    .at-dot.g { background: #153d1e; }
+    .at-path { font-size: 10px; color: var(--muted); margin-left: 6px; letter-spacing: 0.08em; }
+
+    .about-terminal-body { padding: 20px; }
+    .at-line { margin-bottom: 6px; }
+    .at-cmt  { color: var(--muted); }
+    .at-key  { color: var(--cyan2); }
+    .at-val  { color: var(--green2); }
+    .at-str  { color: #a0d0a0; }
+    .at-num  { color: #7aabcf; }
+    .at-bracket { color: var(--dim); }
+
+    /* CONTACT section */
+    #contact { border-top: 1px solid var(--border); }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 48px;
+    }
+
+    .contact-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 24px;
+      text-decoration: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: block;
+    }
+    .contact-card:hover {
+      border-color: var(--cyan3);
+      box-shadow: 0 4px 20px rgba(0,150,167,0.1);
+    }
+    .contact-card-icon {
+      width: 40px; height: 40px;
+      background: var(--dark);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .contact-card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--bright);
+      margin-bottom: 4px;
+    }
+    .contact-card-desc {
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.5;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .contact-card-arrow {
+      margin-top: 16px;
+      font-size: 10px;
+      color: var(--cyan3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text2);
+    }
+    .footer-brand span { color: var(--cyan); }
+    .footer-copy {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--cyan); }
+
+    /* Scan line overlay effect */
+    .scanline {
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 229, 255, 0.008) 2px,
+        rgba(0, 229, 255, 0.008) 4px
+      );
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="scanline"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-mark">
+          <!-- Blackfang Labs — compact fang mark (24×28 viewport) -->
+          <svg viewBox="0 0 24 28" width="24" height="28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <polygon points="12,1 22,6.5 22,21.5 12,27 2,21.5 2,6.5" stroke="#00bcd4" stroke-width="1.1" fill="none"/>
+            <polygon points="12,3.5 20,8 20,20 12,24.5 4,20 4,8" stroke="#003d4a" stroke-width="0.6" fill="none"/>
+            <circle cx="12" cy="1"  r="1"   fill="#00e5ff"/>
+            <circle cx="22" cy="6.5" r="0.8" fill="#00bcd4"/>
+            <circle cx="22" cy="21.5" r="0.8" fill="#00bcd4"/>
+            <circle cx="12" cy="27" r="1"   fill="#00e5ff"/>
+            <circle cx="2"  cy="21.5" r="0.8" fill="#00bcd4"/>
+            <circle cx="2"  cy="6.5" r="0.8" fill="#00bcd4"/>
+            <rect x="6" y="10" width="12" height="2.5" rx="0.6" fill="#001a22" stroke="#00bcd4" stroke-width="0.7"/>
+            <rect x="10.5" y="10" width="3" height="2.5" fill="#000"/>
+            <path d="M6.5,12.5 L10,12.5 L8.8,21 L7.8,23.5 L6.8,21 Z" fill="#000d14" stroke="#00bcd4" stroke-width="0.8" stroke-linejoin="round"/>
+            <path d="M14,12.5 L17.5,12.5 L17.2,21 L16.2,23.5 L15.2,21 Z" fill="#000d14" stroke="#00bcd4" stroke-width="0.8" stroke-linejoin="round"/>
+            <circle cx="7.8"  cy="23.5" r="0.7" fill="#00e5ff" opacity="0.8"/>
+            <circle cx="16.2" cy="23.5" r="0.7" fill="#00e5ff" opacity="0.8"/>
+          </svg>
+        </div>
+        <span class="nav-brand">Blackfang<span>Labs</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#docs" class="nav-cta">Docs</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero">
+      <div class="container">
+        <div class="hero-inner">
+
+          <div class="terminal-bar">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+            <span class="terminal-title">blackfang@labs:~ — bash</span>
+          </div>
+          <div class="terminal-body">
+            <div class="terminal-prompt">
+              <span class="prompt-host">blackfang@labs</span>
+              <span class="prompt-char">$</span>
+              <span class="prompt-cmd">cat /etc/motd</span>
+            </div>
+            <div class="terminal-output">
+              <div class="hero-title">
+                Blackfang<br/>
+                <span class="accent">Labs</span>
+              </div>
+              <p style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text2); margin-bottom:4px;">
+                // Offensive security tooling. Free. Local. No API keys.
+              </p>
+              <p style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text2);">
+                // Built for researchers, pentesters, and OSINT analysts.<span class="cursor"></span>
+              </p>
+            </div>
+          </div>
+
+          <div class="hero-btns">
+            <a href="#tools" class="btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              View Tools
+            </a>
+            <a href="#about" class="btn-secondary">About the Lab →</a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-num">2</div>
+              <div class="stat-label">Security Tools</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">0</div>
+              <div class="stat-label">Paid APIs</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">100%</div>
+              <div class="stat-label">Local-Only</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">11</div>
+              <div class="stat-label">Modules</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section id="tools">
+      <div class="container">
+        <div class="section-label">Arsenal</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-size:clamp(28px,4vw,42px); font-weight:800; color:var(--bright); letter-spacing:-0.01em; line-height:1.15;">
+          Security Tools
+        </h2>
+        <p style="font-family:'Space Grotesk',sans-serif; font-size:15px; color:var(--text2); margin-top:12px; max-width:560px; line-height:1.7;">
+          Two purpose-built tools for OSINT intelligence gathering and offensive security analysis. No subscriptions, no data leaks, no rate limits.
+        </p>
+
+        <div class="tools-grid">
+
+          <!-- Bloodhound Recon -->
+          <div class="tool-card bloodhound">
+            <span class="tool-badge recon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              OSINT · Recon
+            </span>
+            <div class="tool-name">Bloodhound <span class="bloodhound-accent">Recon</span></div>
+            <div class="tool-tagline">OSINT Intelligence Dashboard</div>
+            <p class="tool-desc">
+              A gothic-themed local OSINT platform for intelligence gathering on IPs, domains, emails, phone numbers, usernames, and image EXIF metadata. Powered by GeoLite2, dnspython, phonenumbers, and a Sherlock-style username engine.
+            </p>
+            <div class="tool-modules">
+              <span class="module-tag">IP Intelligence</span>
+              <span class="module-tag">Domain WHOIS</span>
+              <span class="module-tag">Email Analysis</span>
+              <span class="module-tag">Phone Lookup</span>
+              <span class="module-tag">Username Sweep</span>
+              <span class="module-tag">EXIF Extraction</span>
+            </div>
+            <div class="tool-footer">
+              <span class="tool-stack">Python · FastAPI · Alpine.js</span>
+              <a href="http://127.0.0.1:8080" class="tool-link bloodhound-link">
+                Launch →
+              </a>
+            </div>
+          </div>
+
+          <!-- Nightbreak Pentest -->
+          <div class="tool-card nightbreak">
+            <span class="tool-badge pentest">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+              </svg>
+              Pentest · Offensive
+            </span>
+            <div class="tool-name">Nightbreak <span class="nightbreak-accent">Pentest</span></div>
+            <div class="tool-tagline">Offensive Security Suite</div>
+            <p class="tool-desc">
+              A navy-black cyber toolkit for active security testing. Concurrent TCP port scanning with banner grabbing, HTTP directory brute-forcing, TLS certificate analysis, cryptographic hash utilities, and structured pentest report generation.
+            </p>
+            <div class="tool-modules">
+              <span class="module-tag">Network Scan</span>
+              <span class="module-tag">Dir Brute-Force</span>
+              <span class="module-tag">TLS Analysis</span>
+              <span class="module-tag">Hash Compute</span>
+              <span class="module-tag">Hash Identify</span>
+              <span class="module-tag">Report Builder</span>
+            </div>
+            <div class="tool-footer">
+              <span class="tool-stack">Python · FastAPI · Alpine.js</span>
+              <a href="http://127.0.0.1:8081" class="tool-link nightbreak-link">
+                Launch →
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="container">
+        <div class="section-label">About</div>
+        <div class="about-grid">
+          <div>
+            <h2 class="about-title">
+              Built for the<br/><span class="accent">Command Line</span><br/>generation.
+            </h2>
+            <p class="about-body">
+              Blackfang Labs builds privacy-first, local-only security tools for analysts, researchers, and penetration testers. Every tool works offline, ships with zero telemetry, and requires no subscription or API key to be fully functional.
+            </p>
+            <p class="about-body">
+              The philosophy is simple: security researchers shouldn't have to send their targets to third-party APIs just to gather intelligence. Everything runs on your machine, under your control.
+            </p>
+
+            <div class="principles">
+              <div class="principle">
+                <div class="principle-icon">🔒</div>
+                <div class="principle-text">
+                  <h4>Local by Default</h4>
+                  <p>All analysis runs locally. No data leaves your machine unless you explicitly make outbound requests (WHOIS, rDNS, username checks).</p>
+                </div>
+              </div>
+              <div class="principle">
+                <div class="principle-icon">⚡</div>
+                <div class="principle-text">
+                  <h4>No Gatekeeping</h4>
+                  <p>All tools are free and open. No freemium tiers, no rate-limited APIs, no account creation required.</p>
+                </div>
+              </div>
+              <div class="principle">
+                <div class="principle-icon">🛠</div>
+                <div class="principle-text">
+                  <h4>Termux-Compatible</h4>
+                  <p>Every tool is designed to run on Android via Termux — full-featured security tools in your pocket.</p>
+                </div>
+              </div>
+              <div class="principle">
+                <div class="principle-icon">🎯</div>
+                <div class="principle-text">
+                  <h4>Graceful Degradation</h4>
+                  <p>Missing an optional database? The tool tells you what's missing and keeps working with what it has.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="about-terminal">
+              <div class="about-terminal-header">
+                <div class="at-dot r"></div>
+                <div class="at-dot y"></div>
+                <div class="at-dot g"></div>
+                <span class="at-path">~/blackfang-labs/manifest.json</span>
+              </div>
+              <div class="about-terminal-body" style="font-size:12px; font-family:'JetBrains Mono',monospace; line-height:1.7;">
+                <div class="at-line at-bracket">{</div>
+                <div class="at-line" style="padding-left:16px;"><span class="at-key">"org"</span>: <span class="at-str">"Blackfang Labs"</span>,</div>
+                <div class="at-line" style="padding-left:16px;"><span class="at-key">"mission"</span>: <span class="at-str">"local-only security tooling"</span>,</div>
+                <div class="at-line" style="padding-left:16px;"><span class="at-key">"tools"</span>: <span class="at-bracket">[</span></div>
+                <div class="at-line" style="padding-left:32px;"><span class="at-bracket">{</span></div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"name"</span>: <span class="at-str">"bloodhound-recon"</span>,</div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"type"</span>: <span class="at-str">"osint"</span>,</div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"modules"</span>: <span class="at-num">6</span>,</div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"theme"</span>: <span class="at-str">"blood-red + gothic"</span></div>
+                <div class="at-line" style="padding-left:32px;"><span class="at-bracket">},</span></div>
+                <div class="at-line" style="padding-left:32px;"><span class="at-bracket">{</span></div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"name"</span>: <span class="at-str">"nightbreak-pentest"</span>,</div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"type"</span>: <span class="at-str">"offensive"</span>,</div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"modules"</span>: <span class="at-num">5</span>,</div>
+                <div class="at-line" style="padding-left:48px;"><span class="at-key">"theme"</span>: <span class="at-str">"black + navy-blue"</span></div>
+                <div class="at-line" style="padding-left:32px;"><span class="at-bracket">}</span></div>
+                <div class="at-line" style="padding-left:16px;"><span class="at-bracket">],</span></div>
+                <div class="at-line" style="padding-left:16px;"><span class="at-key">"paid_apis"</span>: <span class="at-num" style="color:#4ade80;">0</span>,</div>
+                <div class="at-line" style="padding-left:16px;"><span class="at-key">"telemetry"</span>: <span class="at-num" style="color:#f87171;">false</span>,</div>
+                <div class="at-line" style="padding-left:16px;"><span class="at-key">"local_only"</span>: <span class="at-num" style="color:#4ade80;">true</span></div>
+                <div class="at-line at-bracket">}</div>
+              </div>
+            </div>
+
+            <div style="margin-top:24px; padding:20px; background:var(--panel); border:1px solid var(--border); border-radius:4px;">
+              <div style="font-size:9px; color:var(--cyan3); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:12px;">Compatible Platforms</div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <span style="font-family:'Space Grotesk',sans-serif; font-size:11px; padding:5px 10px; background:var(--dark); border:1px solid var(--border2); border-radius:2px; color:var(--text2);">Linux</span>
+                <span style="font-family:'Space Grotesk',sans-serif; font-size:11px; padding:5px 10px; background:var(--dark); border:1px solid var(--border2); border-radius:2px; color:var(--text2);">macOS</span>
+                <span style="font-family:'Space Grotesk',sans-serif; font-size:11px; padding:5px 10px; background:var(--dark); border:1px solid var(--border2); border-radius:2px; color:var(--text2);">Windows</span>
+                <span style="font-family:'Space Grotesk',sans-serif; font-size:11px; padding:5px 10px; background:var(--dark); border:1px solid var(--border2); border-radius:2px; color:var(--text2);">Termux (Android)</span>
+                <span style="font-family:'Space Grotesk',sans-serif; font-size:11px; padding:5px 10px; background:var(--dark); border:1px solid var(--border2); border-radius:2px; color:var(--text2);">Replit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT / DOCS -->
+    <section id="contact">
+      <div class="container">
+        <div class="section-label">Resources</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-size:clamp(26px,3.5vw,38px); font-weight:800; color:var(--bright); letter-spacing:-0.01em;">
+          Documentation &amp; Links
+        </h2>
+        <p style="font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--text2); margin-top:10px; max-width:500px; line-height:1.7;">
+          Each tool ships with a built-in Swagger API explorer and a README covering setup, optional databases, and architecture decisions.
+        </p>
+
+        <div class="contact-grid">
+          <a href="http://127.0.0.1:8080/docs" class="contact-card">
+            <div class="contact-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#c87070" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <div class="contact-card-title">Bloodhound Recon API</div>
+            <div class="contact-card-desc">Interactive API documentation with request/response schemas for all OSINT modules.</div>
+            <div class="contact-card-arrow">localhost:8080/docs →</div>
+          </a>
+
+          <a href="http://127.0.0.1:8081/docs" class="contact-card">
+            <div class="contact-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="var(--cyan2)" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <div class="contact-card-title">Nightbreak Pentest API</div>
+            <div class="contact-card-desc">Swagger docs for network scanning, dir brute-forcing, TLS analysis, and report builder endpoints.</div>
+            <div class="contact-card-arrow">localhost:8081/docs →</div>
+          </a>
+
+          <a href="https://github.com/blackfang-labs" class="contact-card">
+            <div class="contact-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="var(--text2)" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+            </div>
+            <div class="contact-card-title">GitHub</div>
+            <div class="contact-card-desc">Source code, issue tracking, and contributions for all Blackfang Labs projects.</div>
+            <div class="contact-card-arrow">github.com/blackfang-labs →</div>
+          </a>
+
+          <a href="mailto:blackfang-labs@outlook.com" class="contact-card">
+            <div class="contact-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="var(--green2)" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div class="contact-card-title">Contact</div>
+            <div class="contact-card-desc">Reach out for security research inquiries, collaboration, or bug reports.</div>
+            <div class="contact-card-arrow">blackfang-labs@outlook.com →</div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">Blackfang<span>Labs</span></div>
+      <ul class="footer-links">
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Docs</a></li>
+      </ul>
+      <div class="footer-copy">Built local. Stays local.</div>
+    </div>
+  </footer>
+
+</body>
+</html>
